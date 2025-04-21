@@ -6,23 +6,14 @@ dotenv.config();
 
 const User = require('../models/User');
 const sendEmail = require('../utils/sendEmail');
-const { validateRequiredFields, validateUserCredentials } = require('../utils/validateFields');
+const validateUserCredentials = require('../utils/validateFields');
 const handleValidationErrors = require('../utils/handleValidationErrors');
 
 
 // Регистрация
 exports.register = async (req, res) => {
     try {
-        const { username, email, password, confirmPassword, mobileNumber } = req.body;
-
-        const fieldsToValidate = [
-            { key: 'username', label: 'Username' },
-            { key: 'email', label: 'Email' },
-            { key: 'password', label: 'Password' },
-            // { key: 'confirmPassword', label: 'Confirm password' },
-        ];
-
-        const { errors, message } = validateRequiredFields(req.body, fieldsToValidate, password, confirmPassword);
+        const { fname, lname, email, password } = req.body;
 
         const validationError = handleValidationErrors(res, message, errors, 400);
         if (validationError) return;
@@ -58,27 +49,17 @@ exports.register = async (req, res) => {
 
 // Логин
 exports.login = async (req, res) => {
-    const { username, password } = req.body;
-    const fieldsToValidate = [
-        { key: 'username', label: 'Username' },
-        { key: 'password', label: 'Password' },
-    ];
-
-    const { errors, message } = validateRequiredFields(req.body, fieldsToValidate);
-
-    // Проверка на пустоту полей
-    const validationError = handleValidationErrors(res, message, errors, 400);
-    if (validationError) return;
+    const { email, password } = req.body;
 
     // Проверка на введенные данные
-    const { authErrors, user } = await validateUserCredentials(username, password);
-    const authError = handleValidationErrors(res, message, authErrors, 401);
+    const { authErrors, user } = await validateUserCredentials(email, password);
+    const authError = handleValidationErrors(res, authErrors, 401);
     if (authError) return;
 
     try {
         const tokenPayload = {
             userId: user._id,
-            username: user.username,
+            email: user.email,
             role: user.role,
         };
 
@@ -88,7 +69,7 @@ exports.login = async (req, res) => {
             token,
             user: {
                 id: user._id,
-                username: user.username,
+                email: user.email,
                 role: user.role,
             }
         });

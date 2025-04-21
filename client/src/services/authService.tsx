@@ -27,7 +27,7 @@ export interface AuthResponse {
 
 // Логин пользователя
 export const loginUser = async (credentials: LoginCredentials): Promise<AuthResponse> => {
-  const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, credentials);
+  const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, credentials);
   return response.data;
 };
 

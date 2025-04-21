@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
+import { loginUser, registerUser } from "../../services/authService";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
@@ -9,11 +10,15 @@ import Button from "../ui/button/Button";
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string; error?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; emptyFields?: string; authError?: string }>({});
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+
+  const resetErrors = () => {
+    setErrors({});
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -21,26 +26,35 @@ export default function SignInForm() {
       ...prevData,
       [name]: value,
     }));
+    resetErrors();
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    type Errors = Partial<Record<'email' | 'password' | 'error', string>>;
-    const errors: Errors = {};
-
+  
+    const emptyErrors: typeof errors = {}; // создаём копию
+  
     const { email, password } = formData;
-
+  
     const isEmailEmpty = !email?.trim();
     const isPasswordEmpty = !password?.trim();
-
-    if (isEmailEmpty) errors.email = 'Email is required';
-    if (isPasswordEmpty) errors.password = 'Password is required';
+  
+    if (isEmailEmpty) emptyErrors.email = 'Email is required';
+    if (isPasswordEmpty) emptyErrors.password = 'Password is required';
     if (isEmailEmpty && isPasswordEmpty) {
-      errors.error = 'Please fill in the required fields';
+      emptyErrors.emptyFields = 'Please fill in the required fields';
     }
-    setErrors(errors);
-  }
+  
+    setErrors(emptyErrors);
+    if (Object.keys(emptyErrors).length !== 0) return;
+  
+    try {
+      await loginUser({ email, password });
+    } catch (err: any) {
+      const authError = err.response?.data?.errors;
+      setErrors(authError || {});
+    }
+  };
 
   return (
     <div className="flex flex-col flex-1">
@@ -128,20 +142,20 @@ export default function SignInForm() {
                 <div>
                   <Label className="input-label">
                     {errors.email && (
-                      <div className="error-message">{errors.error ? errors.error : errors.email}</div>
+                      <div className="error-message">{errors.emptyFields ? errors.emptyFields : errors.email}</div>
                     )}
                     Email <span className="text-error-500">*</span>{" "}
                   </Label>
                   <Input 
                     className={errors.email ? 'border-2 border-red-500 dark:border-red-500' : '' }
-                    name="email" 
+                    name="email"
                     placeholder="info@gmail.com" 
                     onChange={handleChange} 
                     value={formData.email} />
                 </div>
                 <div>
                   <Label className="input-label">
-                    {errors.password && !errors.error && (
+                    {errors.password && !errors.emptyFields && (
                       <div className="error-message">{errors.password}</div>
                     )}
                     Password <span className="text-error-500">*</span>{" "}
