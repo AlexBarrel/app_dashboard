@@ -21,7 +21,7 @@ import Home from "./pages/Dashboard/Home";
 import PrivateRoute from "./components/routes/PrivateRoute";
 
 export default function App() {
-  const token = "s";
+  const token = "";
 
   return (
     <>

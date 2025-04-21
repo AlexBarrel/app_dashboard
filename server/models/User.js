@@ -2,10 +2,13 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-    username: {
+    fname: {
         type: String,
         required: true,
-        unique: true,
+    },
+    lname: {
+        type: String,
+        required: true,
     },
     email: {
         type: String,
@@ -16,10 +19,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    mobileNumber: {
-        type: String,
-        required: false, // можно сделать true, если обязательно
-    },
+    // mobileNumber: {
+    //     type: String,
+    //     required: false,
+    // },
     role: {
         type: String,
         enum: ['admin', 'user'],
@@ -44,6 +47,6 @@ userSchema.pre('save', async function (next) {
     }
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema, 'kombim_users');
 
 module.exports = User;

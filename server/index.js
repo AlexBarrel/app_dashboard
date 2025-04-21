@@ -32,9 +32,10 @@ const createAdminUser = async () => {
     const existingAdmin = await User.findOne({ username: 'admin' });
     if (!existingAdmin) {
       const admin = new User({
-        username: 'admin',
+        fname: 'admin',
+        lname: 'admin',
         email: 'admin@example.com',
-        password: 'admin123',
+        password: 'GxD=LQkJ:Gu1pgb',
         role: 'admin',
       });
       await admin.save();

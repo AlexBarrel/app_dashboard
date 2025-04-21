@@ -9,8 +9,9 @@ import Button from "../ui/button/Button";
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string; error?: string }>({});
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: '',
   });
 
@@ -24,18 +25,23 @@ export default function SignInForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let data = {
-      username: formData.username,
-      password: formData.password
-    }
 
-    try {
-      void data;
-    } catch {
-      void data;
+    type Errors = Partial<Record<'email' | 'password' | 'error', string>>;
+    const errors: Errors = {};
+
+    const { email, password } = formData;
+
+    const isEmailEmpty = !email?.trim();
+    const isPasswordEmpty = !password?.trim();
+
+    if (isEmailEmpty) errors.email = 'Email is required';
+    if (isPasswordEmpty) errors.password = 'Password is required';
+    if (isEmailEmpty && isPasswordEmpty) {
+      errors.error = 'Please fill in the required fields';
     }
+    setErrors(errors);
   }
-  
+
   return (
     <div className="flex flex-col flex-1">
       <div className="w-full max-w-md pt-10 mx-auto">
@@ -120,17 +126,29 @@ export default function SignInForm() {
             <form onSubmit={handleSubmit}>
               <div className="space-y-6">
                 <div>
-                  <Label>
+                  <Label className="input-label">
+                    {errors.email && (
+                      <div className="error-message">{errors.error ? errors.error : errors.email}</div>
+                    )}
                     Email <span className="text-error-500">*</span>{" "}
                   </Label>
-                  <Input name="username" placeholder="info@gmail.com" onChange={handleChange} value={formData.username} />
+                  <Input 
+                    className={errors.email ? 'border-2 border-red-500 dark:border-red-500' : '' }
+                    name="email" 
+                    placeholder="info@gmail.com" 
+                    onChange={handleChange} 
+                    value={formData.email} />
                 </div>
                 <div>
-                  <Label>
+                  <Label className="input-label">
+                    {errors.password && !errors.error && (
+                      <div className="error-message">{errors.password}</div>
+                    )}
                     Password <span className="text-error-500">*</span>{" "}
                   </Label>
                   <div className="relative">
                     <Input
+                      className={errors.password ? 'border-2 border-red-500 dark:border-red-500' : '' }
                       name="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"

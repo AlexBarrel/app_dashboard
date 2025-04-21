@@ -1,17 +1,16 @@
 import axios from 'axios';
 
-// Типы для регистрации
-export interface RegisterData {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword?: string;
-  mobileNumber?: string;
-}
-
 // Типы для логина
 export interface LoginCredentials {
-  username: string;
+  email: string;
+  password: string;
+}
+
+// Типы для регистрации
+export interface RegisterData {
+  fname: string;
+  lname: string;
+  email: string;
   password: string;
 }
 
@@ -26,15 +25,15 @@ export interface AuthResponse {
   };
 }
 
-// Регистрация пользователя
-export const registerUser = async (userData: RegisterData): Promise<AuthResponse> => {
-  const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/register`, userData);
-  return response.data;
-};
-
 // Логин пользователя
 export const loginUser = async (credentials: LoginCredentials): Promise<AuthResponse> => {
   const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, credentials);
+  return response.data;
+};
+
+// Регистрация пользователя
+export const registerUser = async (userData: RegisterData): Promise<AuthResponse> => {
+  const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/register`, userData);
   return response.data;
 };
 

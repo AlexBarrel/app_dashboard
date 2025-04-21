@@ -791,3 +791,14 @@ span.flatpickr-weekday,
 .cursor-pointer {
   cursor: pointer;
 }
+
+.input-label {
+  position: relative;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  position: absolute;
+  right: 0;
+}
