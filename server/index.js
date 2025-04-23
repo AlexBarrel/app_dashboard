@@ -29,13 +29,13 @@ const User = require('./models/User');
 
 const createAdminUser = async () => {
   try {
-    const existingAdmin = await User.findOne({ username: 'admin' });
+    const existingAdmin = await User.findOne({ fname: 'admin', lname: 'admin' });
     if (!existingAdmin) {
       const admin = new User({
         fname: 'admin',
         lname: 'admin',
-        email: 'admin@example.com',
-        password: 'GxD=LQkJ:Gu1pgb',
+        email: process.env.ADMIN_EMAIL,
+        password: process.env.ADMIN_PASS,
         role: 'admin',
       });
       await admin.save();

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
-import { loginUser, registerUser } from "../../services/authService";
+import { loginUser } from "../../services/authService";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
@@ -32,7 +32,7 @@ export default function SignInForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   
-    const emptyErrors: typeof errors = {}; // создаём копию
+    const emptyErrors: typeof errors = {};
   
     const { email, password } = formData;
   
@@ -49,7 +49,8 @@ export default function SignInForm() {
     if (Object.keys(emptyErrors).length !== 0) return;
   
     try {
-      await loginUser({ email, password });
+      let data = await loginUser({ email, password });
+      console.log(data);
     } catch (err: any) {
       const authError = err.response?.data?.errors;
       setErrors(authError || {});
@@ -60,7 +61,7 @@ export default function SignInForm() {
     <div className="flex flex-col flex-1">
       <div className="w-full max-w-md pt-10 mx-auto">
         <Link
-          to="/"
+          to="/dashboard"
           className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
         >
           <ChevronLeftIcon className="size-5" />

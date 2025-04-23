@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import NotFound from "./pages/OtherPage/NotFound";
@@ -19,9 +19,12 @@ import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import PrivateRoute from "./components/routes/PrivateRoute";
+import { AuthContext, AuthProvider } from "./context/AuthContext";
+import React from "react";
 
-export default function App() {
-  const token = "";
+const AppRoutes = () => {
+  // const { token, role, setToken } = React.useContext(AuthContext);
+  const token = "s";
 
   return (
     <>
@@ -30,7 +33,8 @@ export default function App() {
         <Routes>
           {/* Dashboard Layout */}
           <Route element={<PrivateRoute token={token}><AppLayout /></PrivateRoute>}>
-            <Route index path="/" element={<Home />} />
+            <Route index path="/dashboard" element={<Home />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
             {/* Others Page */}
             <Route path="/profile" element={<UserProfiles />} />
@@ -67,3 +71,13 @@ export default function App() {
     </>
   );
 }
+
+const App = () => {
+  return (
+    <AuthProvider>
+      <AppRoutes />
+    </AuthProvider>
+  )
+}
+
+export default App;
